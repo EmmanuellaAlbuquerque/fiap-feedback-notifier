@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: MS2 - Notificacao (Worker SQS -> SNS)
+
+Globals:
+  Function:
+    Runtime: java17
+    Timeout: 30
+    MemorySize: 512
+    Architectures:
+      - x86_64
+
+Resources:
+
+  ## =========================
+  ## SNS - Tópico de Urgência
+  ## =========================
+  UrgencyTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: Urgencia
+
+  ## =========================
+  ## Lambda - Notification Worker
+  ## =========================
+  NotificationWorkerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: ms2-notification-worker
+      Runtime: java17
+      Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler
+      CodeUri: target/function.zip
+
+      Environment:
+        Variables:
+          URGENT_TOPIC_ARN: !Ref UrgencyTopic
+
+      Policies:
+        - SNSPublishMessagePolicy: # Permite publicar no SNS
+            TopicName: Urgencia
+        - SQSPollerPolicy: # Permite ler do SQS
+            QueueName: FilaUrgencia
+
+      Events:
+        SQSTrigger:
+          Type: SQS
+          Properties:
+            Queue: !ImportValue FilaUrgenciaArn
+            BatchSize: 10
