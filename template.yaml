@@ -2,6 +2,12 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: (fiap-feedback-notifier) - Notificação de Feedback Crítico (MS2)
 
+Parameters:
+  SenderEmail:
+    Type: String
+    Description: "O endereço de e-mail verificado no SES para enviar as notificações."
+    Default: "emmanuellaf.albuquerque@gmail.com"
+
 Globals:
   Function:
     Runtime: java17
@@ -34,12 +40,24 @@ Resources:
       Environment:
         Variables:
           URGENT_TOPIC_ARN: !Ref UrgencyTopic
+          SENDER_EMAIL: !Ref SenderEmail # Passa o e-mail para a Lambda
 
       Policies:
         - SNSPublishMessagePolicy: # Permite publicar no SNS
             TopicName: Urgencia
         - SQSPollerPolicy: # Permite ler do SQS
             QueueName: FilaUrgencia
+        - Statement: # Permissões manuais para SNS (Listar) e SES (Enviar)
+            Effect: Allow
+            Action:
+              - sns:ListSubscriptionsByTopic
+            Resource: !Ref UrgencyTopic
+        - Statement: # Permissão SES mais ampla para evitar erro de autorização no destino
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: "*"
 
       Events:
         SQSTrigger:
@@ -47,3 +65,11 @@ Resources:
           Properties:
             Queue: !ImportValue FilaUrgenciaArn
             BatchSize: 10
+
+  ## =================================
+  ## SES - Identidade de E-mail
+  ## =================================
+  SenderEmailIdentity:
+    Type: AWS::SES::EmailIdentity
+    Properties:
+      EmailIdentity: !Ref SenderEmail
