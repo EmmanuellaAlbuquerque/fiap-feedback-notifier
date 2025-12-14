@@ -19,14 +19,6 @@ Globals:
 Resources:
 
   ## =========================
-  ## SNS - Tópico de Urgência
-  ## =========================
-  UrgencyTopic:
-    Type: AWS::SNS::Topic
-    Properties:
-      TopicName: Urgencia
-
-  ## =========================
   ## Lambda - Notification Worker
   ## =========================
   NotificationWorkerFunction:
@@ -39,20 +31,21 @@ Resources:
 
       Environment:
         Variables:
-          URGENT_TOPIC_ARN: !Ref UrgencyTopic
-          SENDER_EMAIL: !Ref SenderEmail # Passa o e-mail para a Lambda
+          # Importa o ARN do tópico SNS da stack compartilhada
+          URGENT_TOPIC_ARN: !ImportValue UrgencyTopicArn
+          SENDER_EMAIL: !Ref SenderEmail
 
       Policies:
-        - SNSPublishMessagePolicy: # Permite publicar no SNS
-            TopicName: Urgencia
-        - SQSPollerPolicy: # Permite ler do SQS
+        - SQSPollerPolicy: # Permite ler do SQS (usando o nome da fila, que o SAM resolve se estiver na mesma conta/região)
             QueueName: FilaUrgencia
-        - Statement: # Permissões manuais para SNS (Listar) e SES (Enviar)
+        
+        - Statement: # Permissão para listar inscritos no tópico SNS importado
             Effect: Allow
             Action:
               - sns:ListSubscriptionsByTopic
-            Resource: !Ref UrgencyTopic
-        - Statement: # Permissão SES mais ampla para evitar erro de autorização no destino
+            Resource: !ImportValue UrgencyTopicArn
+            
+        - Statement: # Permissão SES para enviar e-mail
             Effect: Allow
             Action:
               - ses:SendEmail
@@ -63,6 +56,7 @@ Resources:
         SQSTrigger:
           Type: SQS
           Properties:
+            # Importa o ARN da fila SQS da stack compartilhada
             Queue: !ImportValue FilaUrgenciaArn
             BatchSize: 10
 
