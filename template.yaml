@@ -1,6 +1,12 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: MS2 - Notificacao (Worker SQS -> SNS)
+Description: (fiap-feedback-notifier) - Notificação de Feedback Crítico (MS2)
+
+Parameters:
+  SenderEmail:
+    Type: String
+    Description: "O endereço de e-mail verificado no SES para enviar as notificações."
+    Default: "email-empresa-notificacoes@gmail.com" # Seu email para testes
 
 Globals:
   Function:
@@ -11,14 +17,6 @@ Globals:
       - x86_64
 
 Resources:
-
-  ## =========================
-  ## SNS - Tópico de Urgência
-  ## =========================
-  UrgencyTopic:
-    Type: AWS::SNS::Topic
-    Properties:
-      TopicName: Urgencia
 
   ## =========================
   ## Lambda - Notification Worker
@@ -33,17 +31,39 @@ Resources:
 
       Environment:
         Variables:
-          URGENT_TOPIC_ARN: !Ref UrgencyTopic
+          # Importa o ARN do tópico SNS da stack compartilhada
+          URGENT_TOPIC_ARN: !ImportValue UrgencyTopicArn
+          SENDER_EMAIL: !Ref SenderEmail
 
       Policies:
-        - SNSPublishMessagePolicy: # Permite publicar no SNS
-            TopicName: Urgencia
-        - SQSPollerPolicy: # Permite ler do SQS
+        - SQSPollerPolicy: # Permite ler do SQS (usando o nome da fila, que o SAM resolve se estiver na mesma conta/região)
             QueueName: FilaUrgencia
+        
+        - Statement: # Permissão para listar inscritos no tópico SNS importado
+            Effect: Allow
+            Action:
+              - sns:ListSubscriptionsByTopic
+            Resource: !ImportValue UrgencyTopicArn
+            
+        - Statement: # Permissão SES para enviar e-mail
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: "*"
 
       Events:
         SQSTrigger:
           Type: SQS
           Properties:
+            # Importa o ARN da fila SQS da stack compartilhada
             Queue: !ImportValue FilaUrgenciaArn
             BatchSize: 10
+
+  ## =================================
+  ## SES - Identidade de E-mail
+  ## =================================
+  SenderEmailIdentity:
+    Type: AWS::SES::EmailIdentity
+    Properties:
+      EmailIdentity: !Ref SenderEmail
