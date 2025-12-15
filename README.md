@@ -1,10 +1,10 @@
-# FIAP Feedback Notifier (Microservice 2)
+# FIAP Feedback Notifier (Microsserviço 2)
 
 Este repositório contém o microsserviço de **Notificação** da plataforma de Feedback. Ele é responsável por processar feedbacks críticos de forma assíncrona e notificar os administradores via e-mail.
 
 ## 📋 Visão Geral
 
-O serviço opera em arquitetura **Serverless** utilizando AWS Lambda e Quarkus. Ele consome mensagens de uma fila SQS (populada pelo serviço de ingestão), verifica o nível de urgência do feedback e, se necessário, envia um e-mail formatado em HTML para os administradores inscritos em um tópico SNS, utilizando o Amazon SES para o envio.
+O serviço opera em arquitetura **Serverless** utilizando AWS Lambda e Quarkus. Ele consome mensagens de uma fila SQS (populada pelo serviço de ingestão), verifica o nível de urgência do feedback e envia um e-mail formatado em HTML para os administradores inscritos em um tópico SNS, utilizando o Amazon SES para o envio.
 
 ### Arquitetura da Solução
 
