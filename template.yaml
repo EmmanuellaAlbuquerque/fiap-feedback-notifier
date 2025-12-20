@@ -34,6 +34,7 @@ Resources:
           QUARKUS_LAMBDA_HANDLER: urgencyNotificationWorker
           # Importa o ARN do tópico SNS da stack compartilhada
           URGENT_TOPIC_ARN: !ImportValue UrgencyTopicArn
+          REPORT_TOPIC_ARN: !ImportValue ReportTopicArn
           SENDER_EMAIL: !Ref SenderEmail
 
       Policies:
@@ -78,6 +79,7 @@ Resources:
           QUARKUS_LAMBDA_HANDLER: reportNotificationWorker
           # Importa o ARN do tópico SNS da stack compartilhada
           REPORT_TOPIC_ARN: !ImportValue ReportTopicArn
+          URGENT_TOPIC_ARN: !ImportValue UrgencyTopicArn
           SENDER_EMAIL: !Ref SenderEmail
 
       Policies:
