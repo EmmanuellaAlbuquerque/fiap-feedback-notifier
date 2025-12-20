@@ -6,7 +6,7 @@ Parameters:
   SenderEmail:
     Type: String
     Description: "O endereço de e-mail verificado no SES para enviar as notificações."
-    Default: "email-empresa-notificacoes@gmail.com" # Seu email para testes
+    Default: "emmanuellaf.albuquerque@gmail.com" # Seu email para testes
 
 Globals:
   Function:
@@ -19,18 +19,19 @@ Globals:
 Resources:
 
   ## =========================
-  ## Lambda - Notification Worker
+  ## Lambda - Urgency Notification Worker
   ## =========================
-  NotificationWorkerFunction:
+  UrgencyNotificationWorkerFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: ms2-notification-worker
+      FunctionName: ms2-urgency-notification-worker
       Runtime: java17
       Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler
       CodeUri: target/function.zip
 
       Environment:
         Variables:
+          QUARKUS_LAMBDA_HANDLER: urgencyNotificationWorker
           # Importa o ARN do tópico SNS da stack compartilhada
           URGENT_TOPIC_ARN: !ImportValue UrgencyTopicArn
           SENDER_EMAIL: !Ref SenderEmail
@@ -59,6 +60,45 @@ Resources:
             # Importa o ARN da fila SQS da stack compartilhada
             Queue: !ImportValue FilaUrgenciaArn
             BatchSize: 10
+
+
+  ## =========================
+  ## Lambda - Report Notification Worker
+  ## =========================
+  ReportNotificationWorkerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: ms2-report-notification-worker
+      Runtime: java17
+      Handler: io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler
+      CodeUri: target/function.zip
+
+      Environment:
+        Variables:
+          QUARKUS_LAMBDA_HANDLER: reportNotificationWorker
+          # Importa o ARN do tópico SNS da stack compartilhada
+          REPORT_TOPIC_ARN: !ImportValue ReportTopicArn
+          SENDER_EMAIL: !Ref SenderEmail
+
+      Policies:
+        - Statement: # Permissão para listar inscritos no tópico SNS importado
+            Effect: Allow
+            Action:
+              - sns:ListSubscriptionsByTopic
+            Resource: !ImportValue ReportTopicArn
+
+        - Statement: # Permissão SES para enviar e-mail
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - ses:SendRawEmail
+            Resource: "*"
+
+      Events:
+        ReportSNSTrigger:
+          Type: SNS
+          Properties:
+            Topic: !ImportValue ReportTopicArn
 
   ## =================================
   ## SES - Identidade de E-mail

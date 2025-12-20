@@ -11,16 +11,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
-@Named("notificationWorker")
-public class NotificationWorker implements RequestHandler<SQSEvent, Void> {
+@Named("urgencyNotificationWorker")
+public class UrgencyNotificationWorker implements RequestHandler<SQSEvent, Void> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NotificationWorker.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UrgencyNotificationWorker.class);
 
     @Inject
     ObjectMapper objectMapper;
 
     @Inject
-    NotificationService notificationService;
+    UrgencyNotificationService urgencyNotificationService;
 
     @Override
     public Void handleRequest(SQSEvent event, Context context) {
@@ -30,7 +30,7 @@ public class NotificationWorker implements RequestHandler<SQSEvent, Void> {
             try {
                 FeedbackMessage feedback = objectMapper.readValue(record.getBody(), FeedbackMessage.class);
                 LOGGER.info("Processing feedback: {}", feedback.toString());
-                notificationService.notifyUrgency(feedback);
+                urgencyNotificationService.notifyUrgency(feedback);
             } catch (Exception exception) {
                 LOGGER.error("Erro ao processar mensagem SQS: {}", record.getBody(), exception);
                 throw new RuntimeException("Erro ao processar mensagem SQS", exception);
