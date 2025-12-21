@@ -1,4 +1,4 @@
-package notifier;
+package notifier.domain;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

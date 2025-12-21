@@ -1,4 +1,4 @@
-package notifier;
+package notifier.domain.report;
 
 public record ReportMessage(
         String subject,

@@ -1,7 +1,9 @@
-package notifier;
+package notifier.service;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import notifier.domain.EmailTemplate;
+import notifier.domain.EmailType;
 
 import java.util.EnumMap;
 import java.util.Map;

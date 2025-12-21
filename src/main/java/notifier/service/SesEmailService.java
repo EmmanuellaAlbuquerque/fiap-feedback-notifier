@@ -1,4 +1,4 @@
-package notifier;
+package notifier.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -84,9 +84,6 @@ public class SesEmailService {
             ByteBuffer buf = ByteBuffer.wrap(outputStream.toByteArray());
 
             RawMessage rawMessage = RawMessage.builder().data(SdkBytes.fromByteBuffer(buf)).build();
-
-            LOGGER.info("RawMessage: {}", rawMessage);
-            LOGGER.info("htmlBody: {}", htmlBody);
 
             SendRawEmailRequest rawEmailRequest = SendRawEmailRequest.builder()
                     .rawMessage(rawMessage)

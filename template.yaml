@@ -6,7 +6,7 @@ Parameters:
   SenderEmail:
     Type: String
     Description: "O endereço de e-mail verificado no SES para enviar as notificações."
-    Default: "emmanuellaf.albuquerque@gmail.com" # Seu email para testes
+    Default: "suaconta@gmail.com" # Seu email para testes
 
 Globals:
   Function:

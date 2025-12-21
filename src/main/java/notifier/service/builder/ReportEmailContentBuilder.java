@@ -1,12 +1,14 @@
-package notifier;
+package notifier.service.builder;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import notifier.domain.report.ReportMessage;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @ApplicationScoped
-public class ReportEmailContentBuilder {
+public class ReportEmailContentBuilder implements EmailContentBuilder<ReportMessage> {
+    @Override
     public Map<String, String> buildHtmlMessagePlaceholders(ReportMessage reportMessage) {
         Map<String, String> map = new HashMap<>();
         map.put("titulo", reportMessage.subject());

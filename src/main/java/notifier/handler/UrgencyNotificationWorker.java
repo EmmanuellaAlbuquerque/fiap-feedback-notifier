@@ -1,4 +1,4 @@
-package notifier;
+package notifier.handler;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import notifier.domain.urgency.FeedbackMessage;
+import notifier.service.urgency.UrgencyNotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package notifier;
+package notifier.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

@@ -1,4 +1,4 @@
-package notifier;
+package notifier.domain.urgency;
 
 import java.time.LocalDateTime;
 
