@@ -19,8 +19,8 @@ public class ReportNotificationWorker implements RequestHandler<SNSEvent, Void> 
     @Inject
     ObjectMapper objectMapper;
 
-//    @Inject
-//    ReportNotificationService reportNotificationService;
+    @Inject
+    ReportNotificationService reportNotificationService;
 
     @Override
     public Void handleRequest(SNSEvent event, Context context) {
@@ -29,10 +29,10 @@ public class ReportNotificationWorker implements RequestHandler<SNSEvent, Void> 
         event.getRecords().forEach(record -> {
             try {
                 String messageJson = record.getSNS().getMessage();
-//                ReportMessage report = objectMapper.readValue(messageJson, ReportMessage.class);
+                ReportMessage report = objectMapper.readValue(messageJson, ReportMessage.class);
 
-//                LOGGER.info("Processing report: {}", report);
-//                reportNotificationService.notifyReport(report);
+                LOGGER.info("Processing report: {}", report);
+                reportNotificationService.notifyReport(report);
 
             } catch (Exception e) {
                 LOGGER.error("Erro ao processar mensagem SNS (report): {}", record.getSNS().getMessage(), e);

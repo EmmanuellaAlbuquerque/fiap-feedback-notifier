@@ -35,6 +35,7 @@ Resources:
           # Importa o ARN do tópico SNS da stack compartilhada
           URGENT_TOPIC_ARN: !ImportValue UrgencyTopicArn
           REPORT_TOPIC_ARN: !ImportValue ReportTopicArn
+          REPORT_SUBSCRIPTION_TOPIC_ARN: !ImportValue ReportSubscriptionTopicArn
           SENDER_EMAIL: !Ref SenderEmail
 
       Policies:
@@ -80,6 +81,7 @@ Resources:
           # Importa o ARN do tópico SNS da stack compartilhada
           REPORT_TOPIC_ARN: !ImportValue ReportTopicArn
           URGENT_TOPIC_ARN: !ImportValue UrgencyTopicArn
+          REPORT_SUBSCRIPTION_TOPIC_ARN: !ImportValue ReportSubscriptionTopicArn
           SENDER_EMAIL: !Ref SenderEmail
 
       Policies:
@@ -87,13 +89,19 @@ Resources:
             Effect: Allow
             Action:
               - sns:ListSubscriptionsByTopic
-            Resource: !ImportValue ReportTopicArn
+            Resource: !ImportValue ReportSubscriptionTopicArn
 
         - Statement: # Permissão SES para enviar e-mail
             Effect: Allow
             Action:
               - ses:SendEmail
               - ses:SendRawEmail
+            Resource: "*"
+
+        - Statement: # Permissão S3 para baixar relatórios
+            Effect: Allow
+            Action:
+              - s3:GetObject
             Resource: "*"
 
       Events:
