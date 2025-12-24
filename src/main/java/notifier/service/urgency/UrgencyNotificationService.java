@@ -6,18 +6,14 @@ import notifier.domain.EmailType;
 import notifier.domain.urgency.FeedbackMessage;
 import notifier.domain.urgency.UrgencyLevel;
 import notifier.service.BaseNotificationService;
-import notifier.service.builder.EmailContentBuilder;
-import notifier.service.builder.UrgencyEmailContentBuilder;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import notifier.service.emailbuilder.EmailContentBuilder;
+import notifier.service.emailbuilder.UrgencyEmailContentBuilder;
 
 @ApplicationScoped
 public class UrgencyNotificationService extends BaseNotificationService<FeedbackMessage> {
 
     @Inject
     UrgencyEmailContentBuilder contentBuilder;
-
-    @ConfigProperty(name = "sns.urgency.topic.arn")
-    String urgencyTopicArn;
 
     @Override
     protected EmailContentBuilder<FeedbackMessage> getContentBuilder() {
@@ -31,7 +27,6 @@ public class UrgencyNotificationService extends BaseNotificationService<Feedback
         processNotification(
             feedback, 
             EmailType.URGENCY,
-            urgencyTopicArn, 
             subject,
             (email, subj, body) -> sesEmailService.sendEmail(email, subj, body)
         );

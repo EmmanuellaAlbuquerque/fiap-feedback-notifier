@@ -1,4 +1,4 @@
-package notifier.service.builder;
+package notifier.service.emailbuilder;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import notifier.domain.report.ReportMessage;

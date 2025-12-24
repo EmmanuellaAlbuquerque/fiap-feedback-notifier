@@ -116,25 +116,35 @@ graph TD
 ## 📦 Como Fazer o Deploy
 
 1.  **Compile o projeto:**
-    ```bash
-    .\mvnw.cmd clean package -DskipTests
-    ```
+```bash
+.\mvnw.cmd clean package -DskipTests
+```
 
 2.  **Execute o deploy guiado com base no `samconfig.toml` já existente:**
-    ```bash
-    sam deploy
-    ```
+```bash
+sam deploy
+```
 
-    > **Importante:** Durante o deploy, altere o email do remetente `email-empresa-notificacoes@gmail.com` no `template.yaml`. Insira um e-mail válido que você tenha acesso.
+> **Importante:** Durante o deploy, altere o email do remetente `email-empresa-notificacoes@gmail.com` no `template.yaml`. Insira um e-mail válido que você tenha acesso.
 
 3.  **Verificação de E-mail (AWS SES Sandbox):**
-    Se a conta AWS estiver em modo Sandbox (padrão para contas novas), você receberá um e-mail da AWS no endereço informado (`SenderEmail`). **Você deve clicar no link de verificação** para permitir que a aplicação envie e-mails usando este endereço. Veja a seção de Troubleshooting. Como estamos utilizando Sandbox tanto o remetente quanto o destinatário devem estar verificados. 
+Se a conta AWS estiver em modo Sandbox (padrão para contas novas), você receberá um e-mail da AWS no endereço informado (`SenderEmail`). **Você deve clicar no link de verificação** para permitir que a aplicação envie e-mails usando este endereço. Veja a seção de Troubleshooting. Como estamos utilizando Sandbox tanto o remetente quanto o destinatário devem estar verificados.
+
+
+4. **Para deletar os serviços criados da AWS**
+```bash
+sam delete --stack-name fiap-feedback-notifier
+```
+
 
 ## 🧪 Como Testar
 
-Como este serviço é um consumidor de fila (Worker), ele não possui um endpoint HTTP direto. Para testá-lo, você deve enviar uma mensagem para a fila SQS `FilaUrgencia`.
+### Exemplos de Payload (JSON)
 
-**Exemplo de Payload (JSON):**
+#### Envio de Feedback de Urgência (SQS)
+
+Este serviço consome mensagens de uma fila SQS. Portanto, para testá-lo, você deve enviar uma mensagem para a fila `FilaUrgencia` com o seguinte payload:
+
 ```json
 {
   "id": "1001",
@@ -143,6 +153,19 @@ Como este serviço é um consumidor de fila (Worker), ele não possui um endpoin
   "dataCriacao": "2025-12-14T20:00:00"
 }
 ```
+
+#### Envio de Relatório (SNS)
+Este serviço consome mensagens publicadas em um tópico SNS. Portanto, para testá-lo, você deve publicar uma mensagem no tópico `ReportTopic` com o seguinte payload:
+
+```json
+{
+"subject": "Relatório dos Feedbacks de Urgências - 22/12/2025",
+"body": "<h3>Relatório consolidado com os feedbacks de urgências enviados durante a semana do dia 22/12/2025 à 26/12/2025.</h3> <br><p>Principais tópicos:</p> <ul><li>Sugestão de disponibilização de material complementar (vídeo atualizado, transcrição ou slides detalhados)</li><li>Dificuldade de acompanhamento do conteúdo e necessidade de rever a aula</li><li>Impactos nos prazos de entrega dos desafios devido às falhas de áudio</li></ul>",
+"s3Url": "https://url-do-s3-do-pdf/relatorioDeUrgencia2025-12-24.pdf"
+}
+```
+
+> **Importante:** Para testar também será necessário ter esse arquivo no S3. Caso não tenha utilizado o MS3 (Microsserviço 3) para gerá-lo.
 
 ## ⚠️ Troubleshooting (AWS SES)
 

@@ -6,9 +6,8 @@ import notifier.config.S3Service;
 import notifier.domain.EmailType;
 import notifier.domain.report.ReportMessage;
 import notifier.service.BaseNotificationService;
-import notifier.service.builder.EmailContentBuilder;
-import notifier.service.builder.ReportEmailContentBuilder;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import notifier.service.emailbuilder.EmailContentBuilder;
+import notifier.service.emailbuilder.ReportEmailContentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,9 +21,6 @@ public class ReportNotificationService extends BaseNotificationService<ReportMes
 
     @Inject
     S3Service s3Service;
-
-    @ConfigProperty(name = "sns.report.subscription.topic.arn")
-    String reportSubscriptionTopicArn;
 
     @Override
     protected EmailContentBuilder<ReportMessage> getContentBuilder() {
@@ -45,7 +41,6 @@ public class ReportNotificationService extends BaseNotificationService<ReportMes
         processNotification(
             reportMessage,
             EmailType.REPORT,
-            reportSubscriptionTopicArn,
             reportMessage.subject(),
             (email, subj, body) -> sesEmailService.sendEmailWithAttachment(email, subj, body, pdfContent, attachmentName)
         );
