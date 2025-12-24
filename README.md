@@ -26,19 +26,18 @@ flowchart LR
         S3_Reports[("S3<br/>Bucket: fiap-feedback-report-s3")]
     end
 
-%% Urgência (SQS -> Lambda_UrgencyNotifier)
-    SQS_Urgency -->|1. Trigger| Lambda_UrgencyNotifier
-    Lambda_UrgencyNotifier -->|2. Lê feedback| DB
-    Lambda_UrgencyNotifier -->|3. Lê admins| DB_Admins
-    Lambda_UrgencyNotifier -->|4. Envia e‑mails de urgência| SES
+%% Fluxo de Urgência Corrigido
+    SQS_Urgency -->|1. Trigger com dados do feedback| Lambda_UrgencyNotifier
+    Lambda_UrgencyNotifier -->|2. Lê admins| DB_Admins
+    Lambda_UrgencyNotifier -->|3. Envia e‑mails de urgência| SES
 
-%% Relatórios (SNS -> Lambda_ReportNotifier)
-    SNS_Reports -->|5. Trigger| Lambda_ReportNotifier
-    Lambda_ReportNotifier -->|6. Lê admins| DB_Admins
-    Lambda_ReportNotifier -->|7. Baixa PDF| S3_Reports
-    Lambda_ReportNotifier -->|8. Envia e‑mails de relatório| SES
+%% Fluxo de Relatórios
+    SNS_Reports -->|4. Trigger| Lambda_ReportNotifier
+    Lambda_ReportNotifier -->|5. Lê admins| DB_Admins
+    Lambda_ReportNotifier -->|6. Baixa PDF| S3_Reports
+    Lambda_ReportNotifier -->|7. Envia e‑mails de relatório| SES
 
-    SES -->|9. E‑mails - urgência/relatório| Admin
+    SES -->|8. E‑mails - urgência/relatório| Admin
 
     classDef lambda fill:#f9f,stroke:#333,stroke-width:1px;
     classDef db fill:#336699,stroke:#333,stroke-width:1px,color:#fff;
