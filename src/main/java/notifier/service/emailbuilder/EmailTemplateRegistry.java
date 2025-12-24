@@ -1,4 +1,4 @@
-package notifier.service;
+package notifier.service.emailbuilder;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;

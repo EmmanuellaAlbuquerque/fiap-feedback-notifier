@@ -1,4 +1,4 @@
-package notifier.service.builder;
+package notifier.service.emailbuilder;
 
 import java.util.Map;
 

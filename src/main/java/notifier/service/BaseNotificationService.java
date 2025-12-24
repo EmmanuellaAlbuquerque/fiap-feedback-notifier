@@ -3,7 +3,8 @@ package notifier.service;
 import jakarta.inject.Inject;
 import notifier.domain.EmailTemplate;
 import notifier.domain.EmailType;
-import notifier.service.builder.EmailContentBuilder;
+import notifier.service.emailbuilder.EmailContentBuilder;
+import notifier.service.emailbuilder.EmailTemplateRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +19,7 @@ public abstract class BaseNotificationService<T> {
     EmailTemplateRegistry templateRegistry;
 
     @Inject
-    SnsSubscriptionService snsSubscriptionService;
+    AdminSubscriptionService adminSubscriptionService;
 
     @Inject
     protected SesEmailService sesEmailService;
@@ -30,21 +31,22 @@ public abstract class BaseNotificationService<T> {
         void send(String email, String subject, String htmlBody);
     }
 
-    protected void processNotification(T data, EmailType emailType, String topicArn, String subject, NotificationSender notificationSender) {
+    protected void processNotification(T data, EmailType emailType, String subject, NotificationSender notificationSender) {
         EmailTemplate template = templateRegistry.getTemplate(emailType);
         Map<String, String> placeholders = getContentBuilder().buildHtmlMessagePlaceholders(data);
         String htmlMessage = template.render(placeholders);
 
-        List<String> subscribers = snsSubscriptionService.getSubscribers(topicArn);
+        List<String> adminEmails = adminSubscriptionService.getSubscribedAdminEmails();;
 
-        if (subscribers.isEmpty()) {
-            LOGGER.warn("Nenhum inscrito encontrado para o tópico SNS: {}", topicArn);
+        if (adminEmails.isEmpty()) {
+            LOGGER.warn("Nenhum administrador inscrito para receber emails!");
             return;
         }
 
-        LOGGER.info("Enviando notificação para {} inscritos...", subscribers.size());
+        LOGGER.info("Enviando notificação para {} inscritos...", adminEmails.size());
+        LOGGER.info("Emails cadastrados: {}", adminEmails);
 
-        for (String email : subscribers) {
+        for (String email : adminEmails) {
             notificationSender.send(email, subject, htmlMessage);
         }
     }
