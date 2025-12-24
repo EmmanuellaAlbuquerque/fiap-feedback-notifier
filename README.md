@@ -21,7 +21,6 @@ flowchart LR
     subgraph Infra["Infra (vistos por MS2)"]
         SQS_Urgency[("SQS<br/>Fila: FeedbackUrgencia")]
         SNS_Reports[("SNS<br/>Tópico: ReportTopic")]
-        DB[("DynamoDB<br/>Tabela: Feedbacks")]
         DB_Admins[("DynamoDB<br/>Tabela: Admins")]
         S3_Reports[("S3<br/>Bucket: fiap-feedback-report-s3")]
     end
