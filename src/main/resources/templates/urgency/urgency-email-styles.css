@@ -15,7 +15,6 @@ body {
 }
 
 .header {
-    background-color: #d9534f;
     color: #ffffff;
     padding: 20px;
     text-align: center;
@@ -33,7 +32,6 @@ h1 {
 }
 
 h2 {
-    color: #d9534f;
     border-bottom: 2px solid #eeeeee;
     padding-bottom: 10px;
 }
@@ -58,4 +56,28 @@ h2 {
 .urgency-baixa {
     color: #5cb85c;
     font-weight: bold;
+}
+
+.header-alta {
+    background-color: #d9534f;
+}
+
+.header-media {
+    background-color: #f0ad4e;
+}
+
+.header-baixa {
+    background-color: #5cb85c;
+}
+
+.h2-alta {
+    color: #d9534f;
+}
+
+.h2-media {
+    color: #f0ad4e;
+}
+
+.h2-baixa {
+    color: #5cb85c;
 }

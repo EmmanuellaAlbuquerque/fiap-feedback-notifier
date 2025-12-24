@@ -43,7 +43,7 @@ public abstract class BaseNotificationService<T> {
             return;
         }
 
-        LOGGER.info("Enviando notificação para {} inscritos...", adminEmails.size());
+        LOGGER.info("Enviando emails para {} inscritos...", adminEmails.size());
         LOGGER.info("Emails cadastrados: {}", adminEmails);
 
         for (String email : adminEmails) {

@@ -22,8 +22,8 @@ public enum UrgencyLevel {
     }
 
     public static UrgencyLevel fromScore(int score) {
-        if (score <= 3) return HIGH;
-        if (score < 5) return MEDIUM;
+        if (score <= 2) return HIGH;
+        if (score < 4) return MEDIUM;
         return LOW;
     }
 }
