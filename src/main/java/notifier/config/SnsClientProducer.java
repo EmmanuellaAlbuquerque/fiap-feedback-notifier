@@ -1,21 +1,21 @@
-package notifier;
+package notifier.config;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.ses.SesClient;
+import software.amazon.awssdk.services.sns.SnsClient;
 
 @ApplicationScoped
-public class SesClientProducer {
+public class SnsClientProducer {
 
     @Produces
-    public SesClient sesClient() {
-        return SesClient.builder()
-                .credentialsProvider(DefaultCredentialsProvider.create())
+    @ApplicationScoped
+    public SnsClient snsClient() {
+        return SnsClient.builder()
                 .region(Region.US_EAST_1)
                 .httpClient(UrlConnectionHttpClient.builder().build())
                 .build();
     }
 }
+

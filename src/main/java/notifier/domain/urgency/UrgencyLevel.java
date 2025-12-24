@@ -1,4 +1,4 @@
-package notifier;
+package notifier.domain.urgency;
 
 public enum UrgencyLevel {
     HIGH("ALTA", "alta"),
